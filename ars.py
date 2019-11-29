@@ -1,3 +1,7 @@
+# require
+# pip install gym==0.10.5
+# pip install pybullet==2.0.8
+# ffmpeg
 
 # Importing the libraries
 import os

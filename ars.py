@@ -24,8 +24,7 @@ class Hp():
         self.noise = 0.03
         self.seed = 1
         self.env_name = 'HalfCheetahBulletEnv-v0'
-        self.M = np.array([self.nb_steps,self.episode_length,self.learning_rate,self.nb_directions,self.nb_best_directions,self.noise,self.seed,self.env_name])
-
+        self.M = str(self.nb_steps)+"_"+str(self.episode_length)+"_"+str(self.learning_rate)+"_"+str(self.nb_directions)+"_"+str(self.nb_best_directions)+"_"+str(self.noise)+"_"+str(self.seed)
 # Normalizing the states
 
 class Normalizer():
@@ -137,16 +136,19 @@ def mkdir(base, name):
         os.makedirs(path)
     return path
 work_dir = mkdir('exp', 'brs')
-monitor_dir = mkdir(work_dir, 'monitor')
+moni_dir = mkdir(work_dir, 'monitor')
+monitor_dir = mkdir(moni_dir, hp.env_name)
 trained_dir = mkdir(work_dir, 'trained_policy')
-real_dir = mkdir(trained_dir, hp.env_name)
+trainedenv_dir = mkdir(trained_dir, hp.env_name)
 
 hp = Hp()
+param_dir = mkdir(monitor_dir, hp.M)
+param_trained_dir = mkdir(trainedenv_dir, hp.M)
 np.random.seed(hp.seed)
 env = gym.make(hp.env_name)
-env = wrappers.Monitor(env, monitor_dir, force = True)
+env = wrappers.Monitor(env, param_dir, force = True)
 nb_inputs = env.observation_space.shape[0]
 nb_outputs = env.action_space.shape[0]
 policy = Policy(nb_inputs, nb_outputs)
 normalizer = Normalizer(nb_inputs)
-train(env, policy, normalizer, hp, real_dir)
+train(env, policy, normalizer, hp, param_trained_dir)

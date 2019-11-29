@@ -97,7 +97,7 @@ def explore(env, normalizer, policy, direction = None, delta = None):
 def train(env, policy, normalizer, hp, d):
     
     for step in range(hp.nb_steps):
-        
+        total_reward = np.array([])
         # Initializing the perturbations deltas and the positive/negative rewards
         deltas = policy.sample_deltas()
         positive_rewards = [0] * hp.nb_directions
@@ -126,7 +126,8 @@ def train(env, policy, normalizer, hp, d):
         # Printing the final reward of the policy after the update
         reward_evaluation = explore(env, normalizer, policy)
         print('Step:', step, 'Reward:', reward_evaluation)
-        policy.save(d, step, reward_evaluation)
+        total_reward = np.append(total_reward, reward_evaluation)
+        policy.save(d, step, total_reward)
 
 # Running the main code
 
@@ -138,6 +139,7 @@ def mkdir(base, name):
 work_dir = mkdir('exp', 'brs')
 monitor_dir = mkdir(work_dir, 'monitor')
 trained_dir = mkdir(work_dir, 'trained_policy')
+real_dir = mkdir(trained_dir, hp.env_name)
 
 hp = Hp()
 np.random.seed(hp.seed)
@@ -147,4 +149,4 @@ nb_inputs = env.observation_space.shape[0]
 nb_outputs = env.action_space.shape[0]
 policy = Policy(nb_inputs, nb_outputs)
 normalizer = Normalizer(nb_inputs)
-train(env, policy, normalizer, hp, trained_dir)
+train(env, policy, normalizer, hp, real_dir)
